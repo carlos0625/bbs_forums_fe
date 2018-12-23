@@ -1,11 +1,11 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from 'vue';
+import Router from 'vue-router';
 
 // 开发环境未使用lazyloading
-Vue.use(Router)
+Vue.use(Router);
 
 /* Layout */
-import Layout from '../views/layout/Layout'
+import Layout from '../views/layout/Layout';
 
 /**
 * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
@@ -17,7 +17,11 @@ import Layout from '../views/layout/Layout'
   }
 **/
 export const constantRouterMap = [
-  { path: '/login', component: () => import('@/views/login/index'), hidden: true },
+  {
+    path: '/login',
+    component: () => import('@/views/login/index'),
+    hidden: true,
+  },
   { path: '/404', component: () => import('@/views/404'), hidden: true },
   {
     path: '/',
@@ -25,11 +29,32 @@ export const constantRouterMap = [
     redirect: '/frontpage',
     name: 'Frontpage',
     hidden: true,
-    children: [{
-      path: 'frontpage',
-      component: () => import('@/views/frontpage/index')
-    }]
+    children: [
+      {
+        path: 'frontpage',
+        component: () => import('@/views/frontpage/index'),
+      },
+      {
+        path: 'detail/:articleid',
+        name:'detail',
+        component: () => import('@/views/detail/index'),
+        meta: { title: '详情', icon: 'form' },
+      },
+    ],
   },
+  // {
+  //   path: '/detail',
+  //   name: 'detail',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: ':id',
+  //       name:'详情',
+  //       component: () => import('@/views/detail/index'),
+  //       meta: { title: '详情', icon: 'form' },
+  //     },
+  //   ],
+  // },
   {
     path: '/article',
     component: Layout,
@@ -37,11 +62,12 @@ export const constantRouterMap = [
       {
         path: '',
         name: 'article',
-        component: () => import('@/views/form/index'),
-        meta: { title: '写文章', icon: 'form' }
-      }
-    ]
+        component: () => import('@/views/article/index'),
+        meta: { title: '写文章', icon: 'form' },
+      },
+    ],
   },
+
   {
     path: '/tree',
     component: Layout,
@@ -50,9 +76,9 @@ export const constantRouterMap = [
         path: '',
         name: 'Tree',
         component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
+        meta: { title: 'Tree', icon: 'tree' },
+      },
+    ],
   },
   {
     path: '/aboutme',
@@ -62,9 +88,9 @@ export const constantRouterMap = [
         path: 'index',
         name: 'aboutme',
         component: () => import('@/views/form/index'),
-        meta: { title: '关于我', icon: 'form' }
-      }
-    ]
+        meta: { title: '关于我', icon: 'form' },
+      },
+    ],
   },
 
   {
@@ -74,7 +100,7 @@ export const constantRouterMap = [
     name: 'Nested',
     meta: {
       title: 'Nested',
-      icon: 'nested'
+      icon: 'nested',
     },
     children: [
       {
@@ -86,16 +112,16 @@ export const constantRouterMap = [
       {
         path: 'menu2',
         component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
-      }
-    ]
+        meta: { title: 'menu2' },
+      },
+    ],
   },
 
-  { path: '*', redirect: '/404', hidden: true }
-]
+  { path: '*', redirect: '/404', hidden: true },
+];
 
 export default new Router({
   // mode: 'history', //后端支持可开
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRouterMap
-})
+  routes: constantRouterMap,
+});
