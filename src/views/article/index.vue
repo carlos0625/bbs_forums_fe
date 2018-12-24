@@ -42,6 +42,8 @@ import marked from "marked";
 var _ = require("lodash");
 
 var rendererMD = new marked.Renderer();
+
+
 marked.setOptions({
   renderer: rendererMD,
   gfm: true,

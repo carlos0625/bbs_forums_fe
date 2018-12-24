@@ -2,7 +2,7 @@ import { getArticles } from '@/api/article'
 
 const article = {
   state: {
-    articles:[1,2],
+    articles:[],
     newArticle:{},
     modifyArticle:{},
   },
@@ -22,10 +22,10 @@ const article = {
     // 获取文章列表
     getArticle({ commit, state }) {
       return new Promise((resolve, reject) => {
-        getArticles.then(response => {
+        getArticles().then(response => {
           const data = response.data
           if (data.status === 1) {
-            commit('SET_ARTICLES', data.data)
+            commit('SET_ARTICLES', data.result)
           } else {
             reject('getArticle: something wrong')
           }
@@ -37,7 +37,7 @@ const article = {
     },
     modifyArticle({ commit, state }) {
       return new Promise((resolve, reject) => {
-        change.then(response => {
+        change().then(response => {
           const data = response.data
           if (data.status === 1) {
             commit('SET_ARTICLES', data.data)

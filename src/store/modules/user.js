@@ -33,9 +33,9 @@ const user = {
           .then(response => {
             console.log('fuck', response);
             let data = response.data;
-            console.log(data.token);
-            setToken(data.token);
-            commit('SET_TOKEN', 'admin');
+            let token = `Bearer ${data.result}`
+            setToken(token);
+            commit('SET_TOKEN', token);
             resolve();
           })
           .catch(error => {

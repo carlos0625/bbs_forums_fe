@@ -16,7 +16,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   config => {
     if (store.getters.token) {
-      config.headers['Authorization'] = getToken() // 携带token
+      config.headers['authorization'] = getToken() // 携带token
     }
     return config
   },

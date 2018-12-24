@@ -13,3 +13,10 @@ export function modifyArt(data){
     body:data
   })
 }
+
+export function getContent(articleId) {
+  return request({
+    url: '/article/content?articleId=' + articleId,
+    method: 'get'
+  })
+}

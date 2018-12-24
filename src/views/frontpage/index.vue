@@ -3,7 +3,7 @@
     <!-- <div class="frontpage-text">name:{{ name }}</div> -->
     <!-- <div class="frontpage-text">roles:<span v-for="role in roles" :key="role">{{ role }}</span></div> -->
     <div class="articleItem" v-for="(article, index) in articles" :key="index">
-      <articleItem></articleItem>
+      <articleItem v-bind:article="article"></articleItem>
     </div>
   </div>
 </template>
@@ -18,7 +18,7 @@ export default {
   },
   data(){
     return {
-      // articles:[1,2,3,4]
+      
     }
   },
   computed: {
@@ -28,8 +28,11 @@ export default {
   },
   methods:{
     getArticles(){
-      this.$store.dispatch('getArticle').then()
+      this.$store.dispatch('getArticle')
     }
+  },
+  mounted: function() {
+    this.getArticles();
   }
 }
 </script>
