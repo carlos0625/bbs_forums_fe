@@ -47,7 +47,7 @@ instance.interceptors.response.use(
             type: 'warning'
           }
         ).then(() => {
-          store.dispatch('LogOut').then(() => {
+          store.dispatch('FedLogOut').then(() => {
             location.reload() // 重新实例化vue-router对象 避免bug
           })
         })

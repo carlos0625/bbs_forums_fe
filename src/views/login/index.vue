@@ -28,9 +28,12 @@
           Sign in
         </el-button>
       </el-form-item>
+      <el-form-item>
+        <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleRegister">
+          Register
+        </el-button>
+      </el-form-item>
       <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: admin</span>
       </div>
     </el-form>
   </div>
@@ -95,6 +98,29 @@ export default {
             this.$router.push({ path: this.redirect || '/' })
           }).catch(() => {
             this.loading = false
+          })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    handleRegister() {
+      this.$refs.loginForm.validate(valid => {
+        if(valid) {
+          this.loading = true
+          this.$store.dispatch('Register', this.loginForm).then(() => {
+            this.loading = false
+            this.$message({
+              message: '注册成功',
+              type: 'success'
+            })
+          }).catch(error => {
+            this.loading = false
+            this.$message({
+              message: '注册失败',
+              type: 'warning'
+            })
           })
         } else {
           console.log('error submit!!')

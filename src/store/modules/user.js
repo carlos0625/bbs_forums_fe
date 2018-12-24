@@ -1,15 +1,31 @@
-import { login, logout, getInfo } from '@/api/login';
-import { getToken, setToken, removeToken } from '@/utils/auth';
+import {
+  login,
+  logout,
+  getInfo
+} from '@/api/login';
+import {
+  register,
+  updateUser
+} from '@/api/register'
+import {
+  getToken,
+  setToken,
+  removeToken
+} from '@/utils/auth';
 
 const user = {
   state: {
+    id: 0,
     token: getToken(),
     name: '',
     avatar: '',
-    roles: [],
+    roles: '',
   },
 
   mutations: {
+    SET_ID: (state, id) => {
+      state.id = id
+    },
     SET_TOKEN: (state, token) => {
       state.token = token;
     },
@@ -25,17 +41,25 @@ const user = {
   },
 
   actions: {
-    Login({ commit }, data) {
-      // todo:
-      // 用户登录成功之后需要返回用户权限信息，或者单独API获取用户信息
+    Login({
+      commit
+    }, data) {
       return new Promise((resolve, reject) => {
         login(data)
           .then(response => {
             console.log('fuck', response);
-            let data = response.data;
-            let token = `Bearer ${data.result}`
+            let data = response.data.result;
+            let token = `Bearer ${data.token}`
+            let username = data.username
+            let image = data.image
+            let role = data.role
+            let id = data.id
             setToken(token);
-            commit('SET_TOKEN', token);
+            commit('SET_ID', id)
+            commit('SET_TOKEN', token)
+            commit('SET_NAME', username)
+            commit('SET_AVATAR', image)
+            commit('SET_ROLES', role)
             resolve();
           })
           .catch(error => {
@@ -45,7 +69,10 @@ const user = {
     },
 
     // 获取用户信息
-    GetInfo({ commit, state }) {
+    GetInfo({
+      commit,
+      state
+    }) {
       return new Promise((resolve, reject) => {
         getInfo(state.token)
           .then(response => {
@@ -63,9 +90,27 @@ const user = {
           });
       });
     },
+    updateUser({
+      commit,
+      state
+    },data) {
+      return new Promise((resolve, reject) => {
+        updateUser(data)
+          .then(response => {
+            const data = response.data;
+            resolve(response);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      });
+    },
 
     // 登出
-    LogOut({ commit, state }) {
+    LogOut({
+      commit,
+      state
+    }) {
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {
           commit('SET_TOKEN', '')
@@ -79,13 +124,33 @@ const user = {
     },
 
     // 前端登出
-    FedLogOut({ commit }) {
+    FedLogOut({
+      commit
+    }) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '');
         removeToken();
         resolve();
       });
     },
+
+    // 用户注册
+    Register({
+      state
+    }, data) {
+      return new Promise((
+        resolve, reject) => {
+        register(data)
+          .then(response => {
+            console.log('register', response)
+            // let data2 = respone.data
+            resolve(response);
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    }
   },
 };
 
