@@ -53,8 +53,8 @@ export default {
       }
     }
     const validatePass = (rule, value, callback) => {
-      if (value.length < 5) {
-        callback(new Error('密码不能小于5位'))
+      if (value.length < 5 || value.length > 18) {
+        callback(new Error('密码不能小于5位，大于18位'))
       } else {
         callback()
       }
@@ -118,7 +118,7 @@ export default {
           }).catch(error => {
             this.loading = false
             this.$message({
-              message: '注册失败',
+              message: '用户已存在',
               type: 'warning'
             })
           })

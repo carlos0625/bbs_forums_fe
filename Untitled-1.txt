@@ -1,0 +1,32 @@
+前后端接口文档
+
+规范：
+
+返回值：Message message 
+   {
+     status: ...,//状态码
+     message: ...,//信息字符串
+     result: {  //结果集
+       ...
+     }
+   }
+
+
+user模块：
+  1.注册：
+      url: .../user/register
+      method: 'POST’
+      data: User user
+  2.登录: 
+      url: .../user/login
+      method: 'POST'
+      data: {
+        username: ...,
+        password: ...
+      }
+
+article模块：
+  1.获取所有文章列表:
+      url: .../article/list
+      method: 'GET'
+  2.获取单独一篇文章（多表，需要用户名和头像）
