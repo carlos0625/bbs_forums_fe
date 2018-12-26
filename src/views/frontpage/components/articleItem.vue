@@ -1,5 +1,5 @@
 <template>
-  <el-card shadow="hover" class="box-card">
+  <el-card shadow="hover" class="box-card" v-bind:class="{ gray: article.top }">
     <div slot="header" class="clearfix">
       <div class="avatar">
         <!-- <img style="border-radius: 50%;width:40px;height:40px"> -->
@@ -15,15 +15,23 @@
         >{{ article.createdTime.substring(0, 10) + ' ' + article.createdTime.substring(11, 19) }}</div>
       </div>
       <el-row
-        v-if="article.username === name || name==='admin' "
         style="float: right;"
       >
+        <!--置顶-->
+        <el-button v-if="name === 'admin'" type="danger" round size="mini" @click="setTop()">置顶/取消</el-button>
         <!-- 编辑文章 -->
-        <el-button type="primary" @click="goModify()" size="mini" icon="el-icon-edit" circle></el-button>
+        <el-tooltip class="item" effect="dark" content="修改文章" placement="bottom-end">
+          <el-button v-if="article.username === name || name==='admin'"
+          type="primary" @click="goModify()" size="mini" icon="el-icon-edit" circle></el-button>
+        </el-tooltip>
         <!-- 删除文章 -->
-        <!-- <el-button type="danger" @click="deleteArt()" size="mini" icon="el-icon-delete" circle></el-button> -->
+        <!-- <el-button type="danger" @c
+        lick="deleteArt()" size="mini" icon="el-icon-delete" circle></el-button> -->
         <!-- 精选/取消精选 -->
-        <el-button type="warning" size="mini" icon="el-icon-star-off" circle @click="setPickStatus"></el-button>
+        <el-tooltip class="item" effect="dark" content="设为/取消精选" placement="bottom-end">
+          <el-button v-if="name === 'admin'"
+          type="warning" size="mini" icon="el-icon-star-off" circle @click="setPickStatus"></el-button>
+        </el-tooltip>
       </el-row>
     </div>
     <div @click="goDetail()" style="width: 100%;">
@@ -31,7 +39,7 @@
         <div
           style="font-size: 20px;font-weight: bold;margin: 5px 5px 5px 0px; width:100%"
         >
-          {{article.title}}
+          {{ article.title }}
           <div style="float: right">
             <el-tag v-if="article.tag.length!==0" type="success">{{ article.tag }}</el-tag>
             <el-button
@@ -44,22 +52,20 @@
           </div>
         </div>
         <div>{{article.subTitle}}</div>
-        <!-- <div class="tip">
-          <el-badge :value="12" class="item">
+        <div class="tip">
+          <el-badge :value="article.likeNum" class="item">
             <el-tag>赞</el-tag>
           </el-badge>
-          <el-badge :value="3" class="item">
-            <el-tag type="info">踩</el-tag>
-          </el-badge>
-          <el-badge :value="1" class="item" type="primary">
+          <el-badge :value="article.commentNum" class="item" type="primary">
             <el-tag type="warning">评论</el-tag>
           </el-badge>
-        </div>-->
+        </div>
       </div>
     </div>
   </el-card>
 </template>
 <script>
+import { formatTime } from "./../../../utils/index.js"
 import { mapGetters } from "vuex";
 export default {
   props: {
@@ -69,13 +75,14 @@ export default {
         return {
           id: 1,
           title: "this is a title",
-          subTitle: "this is subTitle"
+          subTitle: "this is subTitle",
+          top: true
         };
       }
     }
   },
   computed: {
-    ...mapGetters(["name"])
+    ...mapGetters(["name", "roles"])
   },
   methods: {
     goDetail() {
@@ -106,6 +113,30 @@ export default {
           });
         }
       });
+    },
+
+    setT() {
+      this.article.top = !this.article.top
+    },
+
+    setTop() {
+      let data = {}
+      data.id = this.article.articleId
+      data.title = ''
+      data.subTitle = ''
+      data.top = !this.article.top
+      console.log(this.article.top)
+      console.log(data)
+      this.$store.dispatch("updateTopState", data).then(res => {
+        console.log(res)
+        if(res.status === 1) {
+          this.article.top = !this.article.top
+          this.$message({
+            type: 'success',
+            message: '操作成功'
+          })
+        }
+      })
     },
     deleteArt() {}
   }
@@ -157,5 +188,8 @@ export default {
 .tip {
   margin-top: 10px;
   margin-bottom: -10px;
+}
+.gray {
+  background:ghostwhite;
 }
 </style>

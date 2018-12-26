@@ -4,8 +4,12 @@ import {
   setPickStatus,
   getDetail,
   getComments,
-  addComment,modifyArt
+  addComment,modifyArt,
+  setTop,
+  addReversion,
+  getRWUs
 } from '@/api/article'
+import { getRWU } from '../../api/article';
 
 const article = {
   state: {
@@ -115,6 +119,7 @@ const article = {
         })
       })
     },
+
     setPickStatus({
       state
     }, {
@@ -137,6 +142,7 @@ const article = {
         })
       })
     },
+
     getComments({
       commit,
     },id) {
@@ -154,6 +160,7 @@ const article = {
         })
       })
     },
+
     addComment({
       commit,
     }, data) {
@@ -171,6 +178,69 @@ const article = {
         })
       })
     },
+
+    updateTopState({commit}, data) {
+      return new Promise((resolve, reject) => {
+        setTop(data).then(response => {
+          const data = response.data
+          console.log('fuck', data)
+          if(data.status === 1) {
+            resolve(data)
+          } else {
+            reject('set top fail')
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+
+    //添加评论回复
+    addRev({commit}, data) {
+      return new Promise((resole, reject) => {
+        addReversion(data).then(response => {
+          const data = response.data
+          if(data.status === 1) {
+            resole(data)
+          } else {
+            reject('fail to add reversion')
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+
+    //根据评论的id查询评论回复
+    getReversions({commit}, id) {
+      return new Promise((resolve, reject) => {
+        getRWUs(id).then(response => {
+          const data = response.data
+          if(data.status === 1) {
+            resolve(data)
+          } else {
+            reject('fail to query reversions')
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+
+    getReversion({commit}, id) {
+      return new Promise((resolve, reject) => {
+        getRWU(id).then(response => {
+          const data = response.data
+          if(data.status === 1) {
+            resolve(data)
+          } else {
+            reject('fail to query reversion')
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    }
   }
 }
 

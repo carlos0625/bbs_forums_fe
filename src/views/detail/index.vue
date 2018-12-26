@@ -35,6 +35,7 @@
     <div class="comments">
       <div class="commentItem" v-for="(comment, index) in comments" :key="index">
         <CommentItem v-on:atuser="commentAtUser" :comment="comment"></CommentItem>
+        <reversionItem :commentId="comment.id"></reversionItem>
       </div>
     </div>
   </div>
@@ -44,22 +45,25 @@
 import { mapGetters } from "vuex";
 import marked from "marked";
 import CommentItem from "./components/commentItem.vue";
+import ReversionItem from "./components/reversionItem.vue";
 export default {
   data() {
     return {
       articleid: this.$route.params.articleid,
       content: "",
-      newComment: ""
+      newComment: "",
+      show: false
     };
   },
   components: {
-    CommentItem: CommentItem
+    CommentItem: CommentItem,
+    ReversionItem: ReversionItem
   },
   computed: {
     compiledMarkdown: function() {
       return marked(this.currentArt.content, { sanitize: true });
     },
-    ...mapGetters(["roles", "name", "id", "token", "currentArt", "comments"])
+    ...mapGetters(["roles", "name", "id", "token", "currentArt", "comments"]),
   },
   methods: {
     commentAtUser(data) {
@@ -78,6 +82,14 @@ export default {
       discuss.userId = this.id;
       discuss.articleId = this.articleid;
       discuss.content = this.newComment;
+      discuss.username = this.name
+      if(discuss.content.length === 0) {
+        this.$message({
+          type: 'warning',
+          message: '评论不能为空'
+        })
+        return
+      }
       console.log(discuss);
       this.$store.dispatch("addComment", discuss).then(res => {
         if (res.data.status === 1) {
@@ -116,5 +128,11 @@ export default {
 }
 .commentBtn {
   margin-top: 20px;
+}
+.light-grey {
+  background:lightgrey;
+  margin-left: 40px;
+  width: 450px;
+  padding: 10px;
 }
 </style>

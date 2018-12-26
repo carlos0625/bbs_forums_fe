@@ -1,12 +1,7 @@
 <template>
   <el-card shadow="hover" class="box-card">
     <div slot="header" class="clearfix">
-      <span>{{comment.commenter}}</span>
-      <el-button
-        style="float: right; padding: 3px 0"
-        type="text"
-        @click="$emit('atuser', comment.commenter)"
-      >回复</el-button>
+      <span>{{comment.username}}</span>
     </div>
     <div class="text item">{{comment.content }}</div>
 

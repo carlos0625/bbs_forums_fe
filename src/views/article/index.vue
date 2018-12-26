@@ -1,14 +1,14 @@
 <template>
   <div>
     <div class="controler">
-      <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item label="文章标题">
+      <el-form :inline="true" :model="formInline" ref="formInline" :rules="rules" class="demo-form-inline">
+        <el-form-item label="文章标题" prop="title">
           <el-input v-model="formInline.title" placeholder="标题"></el-input>
         </el-form-item>
-        <el-form-item label="文章概述">
+        <el-form-item label="文章概述" prop="subTitle">
           <el-input v-model="formInline.subTitle" placeholder="概述"></el-input>
         </el-form-item>
-        <el-form-item label="文章标签">
+        <el-form-item label="文章标签" prop="tag">
           <el-input v-model="formInline.tag" placeholder="标签"></el-input>
         </el-form-item>
         <el-form-item>
@@ -42,12 +42,43 @@ marked.setOptions({
 });
 export default {
   data() {
+    const validateTitle = (rule, value, callback) => {
+      if(value.length === 0) {
+        callback(new Error("请填写标题"))
+      } else if(value.length > 12) {
+        callback(new Error("标题过长"))
+      } else {
+        callback()
+      }
+    }
+    const validateSubTitle = (rule, value, callback) => {
+      if(value.length < 10) {
+        callback(new Error("子标题不得少于10字符"))
+      } else if(value.length > 20) {
+        callback(new Error("子标题不得多于20字符"))
+      } 
+      else {
+        callback()
+      }
+    }
+    const validateTag = (rule, value, callback) => {
+      if(value.length === 0) {
+        callback(new Error("请填写标签"))
+      } else {
+        callback()
+      }
+    }
     return {
       content: "# hello",
       formInline: {
         title: "",
         subTitle: "",
         tag: ""
+      },
+      rules: {
+        title: [{ require: true, triggler: 'blur', validator: validateTitle }],
+        subTitle: [{ require:true, triggler: 'blur', validator: validateSubTitle }],
+        tag: [{ require: true, triggler: 'blur', validator: validateTag }]
       },
       modifyArt: {}
     };
@@ -87,20 +118,33 @@ export default {
       this.content = e.target.value;
     }, 300),
     onSubmit() {
-      let content = {};
-      content.content = this.content;
-      content.title = this.formInline.title;
-      content.subTitle = this.formInline.subTitle;
-      content.tag = this.formInline.tag;
-      content.userId = this.id;
-      if (this.modifyStatus.ismodify) {
-        this.modify();
-      } else {
-        this.publishArt(content);
-      }
+      this.$refs.formInline.validate(valid => {
+        if(valid) {
+          let content = {};
+          content.content = this.content;
+          content.title = this.formInline.title;
+          content.subTitle = this.formInline.subTitle;
+          content.tag = this.formInline.tag;
+          content.userId = this.id;
+          if(content.content.trim().length === 0) {
+            this.$message({
+              type: 'warning',
+              message: '文章内容不可为空'
+            })
+            return
+          }
+          if (this.modifyStatus.ismodify) {
+            this.modify();
+          } else {
+            this.publishArt(content);
+          }
+        }
+      })
     },
     publishArt(data) {
-      this.$store
+      this.$refs.formInline.validate(valid => {
+        if(valid) {
+          this.$store
         .dispatch("addArticle", data)
         .then(() => {
           this.content = "";
@@ -117,19 +161,25 @@ export default {
             message: "未知错误"
           });
         });
+        }
+      })
     },
     modify() {
-      let content = this.content;
-      let data = { ...this.modifyArt, ...this.formInline, content };
-      console.log(data);
-      this.$store.dispatch("modifyArticle", data).then(res => {
-        if (res.data.status === 1) {
-          this.$message({
-            type: "success",
-            message: "修改成功"
+      this.$refs.formInline.validate(valid => {
+        if(valid) {
+          let content = this.content;
+          let data = { ...this.modifyArt, ...this.formInline, content };
+          console.log(data);
+          this.$store.dispatch("modifyArticle", data).then(res => {
+          if (res.data.status === 1) {
+            this.$message({
+              type: "success",
+              message: "修改成功"
           });
         }
       });
+        }
+      })
     }
   }
 };
